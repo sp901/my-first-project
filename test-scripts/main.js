@@ -9,7 +9,7 @@ console.log('serviceWorker is in navigator');
   * /example/sw.js, then the service worker would only see fetch events for pages whose URL starts with /example/ 
   * (i.e. /example/page1/, /example/page2/).
   */
-    navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+    navigator.serviceWorker.register('/test-scripts/service-worker.js').then(function(registration) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }).catch(function(err) {
