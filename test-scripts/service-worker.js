@@ -9,9 +9,9 @@ Inside of our install callback, we need to take the following steps:
 
 var CACHE_NAME = 'my-site-cache-v1';
 var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/script/main.js'
+  '/my-first-project/',
+  '/my-first-project/test-styles/main.css',
+  '/my-first-project/test-scripts/main.js'
 ];
 
 self.addEventListener('install', function(event) {
@@ -31,6 +31,7 @@ self.addEventListener('fetch', function(event) {
     caches.match(event.request)
       .then(function(response) {
         // Cache hit - return response
+        console.log('fetch event');
         if (response) {
           return response;
         }
@@ -52,10 +53,12 @@ What we are doing is this:
 6. Make sure the response type is basic, which indicates that it's a request from our origin. This means that requests to third party assets aren't cached as well.
 7. If we pass the checks, we clone the response. The reason for this is that because the response is a Stream, the body can only be consumed once. Since we want to return the response for the browser to use, as well as pass it to the cache to use, we need to clone it so we can send one to the browser and one to the cache.
 */
+/*
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
+        console.log('cache new requests cumulatively');
         // Cache hit - return response
         if (response) {
           return response;
@@ -91,6 +94,7 @@ self.addEventListener('fetch', function(event) {
       })
     );
 });
+*/
 
 /*
 Update service worker
@@ -102,7 +106,7 @@ Update service worker
 5. Once your new service worker takes control, its activate event will be fired.
 */
 self.addEventListener('activate', function(event) {
-
+  console.log('activate');
   var cacheWhitelist = ['pages-cache-v1', 'blog-posts-cache-v1'];
 
   event.waitUntil(
