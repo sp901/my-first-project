@@ -1,13 +1,12 @@
 /*Service worker script
 After a controlled page kicks off the registration process, let's shift to the point of view of the service worker script, which handles the install event.
 Inside of our install callback, we need to take the following steps:
-
 1. Open a cache.
 2. Cache our files.
 3. Confirm whether all the required assets are cached or not.
 */
 
-var CACHE_NAME = 'my-site-cache-v1';
+var CACHE_NAME = 'pages-cache-v1';
 var urlsToCache = [
   '/my-first-project/',
   '/my-first-project/test-styles/main.css',
@@ -42,10 +41,8 @@ self.addEventListener('fetch', function(event) {
 });
 
 /*
-
 If we want to cache new requests cumulatively, we can do so by handling the response of the fetch request and then adding it to the cache, like below.
 What we are doing is this:
-
 1. Add a callback to .then() on the fetch request.
 2. Once we get a response, we perform the following checks:
 3. Ensure the response is valid.
@@ -63,31 +60,26 @@ self.addEventListener('fetch', function(event) {
         if (response) {
           return response;
         }
-
         // IMPORTANT: Clone the request. A request is a stream and
         // can only be consumed once. Since we are consuming this
         // once by cache and once by the browser for fetch, we need
         // to clone the response.
         var fetchRequest = event.request.clone();
-
         return fetch(fetchRequest).then(
           function(response) {
             // Check if we received a valid response
             if(!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
-
             // IMPORTANT: Clone the response. A response is a stream
             // and because we want the browser to consume the response
             // as well as the cache consuming the response, we need
             // to clone it so we have two streams.
             var responseToCache = response.clone();
-
             caches.open(CACHE_NAME)
               .then(function(cache) {
                 cache.put(event.request, responseToCache);
               });
-
             return response;
           }
         );
@@ -98,7 +90,6 @@ self.addEventListener('fetch', function(event) {
 
 /*
 Update service worker
-
 1. Update your service worker JavaScript file. When the user navigates to your site, the browser tries to redownload the script file that defined the service worker in the background. If there is even a byte's difference in the service worker file compared to what it currently has, it considers it new.
 2. Your new service worker will be started and the install event will be fired.
 3. At this point the old service worker is still controlling the current pages so the new service worker will enter a waiting state.
@@ -113,6 +104,7 @@ self.addEventListener('activate', function(event) {
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.map(function(cacheName) {
+			console.log('cacheName: ',cacheName);
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName);
           }
